@@ -25,10 +25,6 @@ export const createUser = inngest.createFunction(
     };
     await connectDB();
     await User.create(userData);
-
-    await clerkClient.users.updateUser(id, {
-      publicMetadata: { role: "user" },
-    });
   }
 );
 

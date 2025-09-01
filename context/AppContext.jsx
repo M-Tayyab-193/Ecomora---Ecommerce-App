@@ -29,8 +29,6 @@ export const AppContextProvider = ({ children }) => {
 
   const fetchUserData = async () => {
     try {
-      if (user.publicMetadata.role === "seller") setIsSeller(true);
-
       const token = await getToken();
 
       const { data } = await axios.get("/api/user/data", {

@@ -5,17 +5,10 @@ import Link from "next/link";
 import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
 import { useClerk, UserButton } from "@clerk/nextjs";
-
-const becomeSeller = async () => {
-  await fetch("/api/upgrade-role", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ role: "seller" }),
-  });
-};
+import axios from "axios";
 
 const Navbar = () => {
-  const { isSeller, setIsSeller, router, user } = useAppContext();
+  const { isSeller, setIsSeller, router, user, getToken } = useAppContext();
   const { openSignIn } = useClerk();
 
   return (
@@ -50,9 +43,20 @@ const Navbar = () => {
         ) : (
           user && (
             <button
-              onClick={() => {
-                becomeSeller();
-                setIsSeller(true);
+              onClick={async () => {
+                const token = await getToken();
+                const { data } = await axios.post(
+                  "/api/upgrade-role",
+                  { role: "seller" },
+                  {
+                    headers: {
+                      Authorization: `Bearer ${token}`,
+                    },
+                  }
+                );
+                if (data.success) {
+                  setIsSeller(true);
+                } else toast.error(data.message);
               }}
               className="text-xs border px-4 py-1.5 rounded-full hover:border hover:border-orange-500 hover:text-black transition-all ease-in-out"
             >
