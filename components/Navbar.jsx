@@ -6,8 +6,16 @@ import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
 import { useClerk, UserButton } from "@clerk/nextjs";
 
+const becomeSeller = async () => {
+  await fetch("/api/upgrade-role", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ role: "seller" }),
+  });
+};
+
 const Navbar = () => {
-  const { isSeller, router, user } = useAppContext();
+  const { isSeller, setIsSeller, router, user } = useAppContext();
   const { openSignIn } = useClerk();
 
   return (
@@ -32,12 +40,22 @@ const Navbar = () => {
           Contact
         </Link>
 
-        {isSeller && (
+        {isSeller ? (
           <button
             onClick={() => router.push("/seller")}
             className="text-xs border px-4 py-1.5 rounded-full hover:border hover:border-orange-500 hover:text-black transition-all ease-in-out"
           >
             Seller Dashboard
+          </button>
+        ) : (
+          <button
+            onClick={() => {
+              becomeSeller();
+              setIsSeller(true);
+            }}
+            className="text-xs border px-4 py-1.5 rounded-full hover:border hover:border-orange-500 hover:text-black transition-all ease-in-out"
+          >
+            Become a seller
           </button>
         )}
       </div>

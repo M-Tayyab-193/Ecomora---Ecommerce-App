@@ -1,6 +1,7 @@
 import { Inngest } from "inngest";
 import connectDB from "./db";
 import User from "@/models/User";
+import { clerkClient } from "@clerk/nextjs/server";
 
 // Create a client to send and receive events
 export const inngest = new Inngest({ id: "ecomora-next" });
@@ -20,9 +21,14 @@ export const createUser = inngest.createFunction(
       name: first_name + " " + last_name,
       email: email_addresses[0].email_address,
       imageUrl: image_url,
+      role: "user",
     };
     await connectDB();
     await User.create(userData);
+
+    await clerkClient.users.updateUser(id, {
+      publicMetadata: { role: "user" },
+    });
   }
 );
 
