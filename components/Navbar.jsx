@@ -6,6 +6,7 @@ import { useAppContext } from "@/context/AppContext";
 import Image from "next/image";
 import { useClerk, UserButton } from "@clerk/nextjs";
 import axios from "axios";
+import toast from "react-hot-toast";
 
 const Navbar = () => {
   const { isSeller, setIsSeller, router, user, getToken } = useAppContext();
@@ -54,9 +55,13 @@ const Navbar = () => {
                     },
                   }
                 );
+                console.log("data", data);
                 if (data.success) {
                   setIsSeller(true);
-                } else toast.error(data.message);
+                } else {
+                  toast.error(data.message);
+                  console.log("Error:", data.message);
+                }
               }}
               className="text-xs border px-4 py-1.5 rounded-full hover:border hover:border-orange-500 hover:text-black transition-all ease-in-out"
             >

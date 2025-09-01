@@ -39,6 +39,7 @@ export const AppContextProvider = ({ children }) => {
 
       if (data?.success) {
         setUserData(data.user);
+        if (data.user.role === "seller") setIsSeller(true);
         setCartItems(data.user.cartItems);
       } else {
         toast.error(data?.message);
@@ -95,7 +96,6 @@ export const AppContextProvider = ({ children }) => {
 
   useEffect(() => {
     if (user) fetchUserData();
-    console.log(user);
   }, [user]);
 
   const value = {

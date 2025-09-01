@@ -8,7 +8,7 @@ export async function POST(request) {
   const { userId } = getAuth(request);
   if (!userId) return { status: 401, body: { error: "Unauthorized" } };
 
-  const { role } = request.body;
+  const { role } = await request.json();
 
   // only allow "seller" upgrade through this route
   if (role !== "seller") {
