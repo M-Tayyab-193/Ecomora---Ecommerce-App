@@ -48,15 +48,17 @@ const Navbar = () => {
             Seller Dashboard
           </button>
         ) : (
-          <button
-            onClick={() => {
-              becomeSeller();
-              setIsSeller(true);
-            }}
-            className="text-xs border px-4 py-1.5 rounded-full hover:border hover:border-orange-500 hover:text-black transition-all ease-in-out"
-          >
-            Become a seller
-          </button>
+          user && (
+            <button
+              onClick={() => {
+                becomeSeller();
+                setIsSeller(true);
+              }}
+              className="text-xs border px-4 py-1.5 rounded-full hover:border hover:border-orange-500 hover:text-black transition-all ease-in-out"
+            >
+              Become a seller
+            </button>
+          )
         )}
       </div>
 
