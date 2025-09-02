@@ -31,18 +31,12 @@ const userSchema = new mongoose.Schema(
     sellerProfile: {
       storeName: {
         type: String,
-        required: false,
-        default: "",
       },
       phone: {
         type: String,
-        required: false,
-        default: "",
       },
       category: {
         type: String,
-        required: false,
-        default: "Other",
       },
     },
   },
