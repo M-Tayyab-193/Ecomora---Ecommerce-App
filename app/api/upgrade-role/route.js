@@ -23,5 +23,9 @@ export async function POST(request) {
     sellerProfile: { storeName, phone, category },
   });
 
+  const client = await clerkClient();
+  const user = await client.users.getUser(userId);
+  await user.update({ publicMetadata: { role: "seller" } });
+
   return NextResponse.json({ success: true, role });
 }
