@@ -22,6 +22,7 @@ export const createUser = inngest.createFunction(
       email: email_addresses[0].email_address,
       imageUrl: image_url,
       role: "user",
+      sellerProfile: {},
     };
     await connectDB();
     await User.create(userData);
