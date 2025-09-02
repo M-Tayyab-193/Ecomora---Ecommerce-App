@@ -25,7 +25,7 @@ export async function POST(request) {
       $set: {
         role,
         "sellerProfile.storeName": storeName,
-        "sellerProfile.phone": phone,
+        "sellerProfile.phone": phone.toString(),
         "sellerProfile.category": category,
       },
     },
