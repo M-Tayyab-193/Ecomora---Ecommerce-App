@@ -28,6 +28,32 @@ const userSchema = new mongoose.Schema(
       required: true,
       default: "user",
     },
+    sellerProfile: {
+      storeName: {
+        type: String,
+        required: false,
+      },
+      phone: {
+        type: String,
+        required: false,
+      },
+      category: {
+        type: String,
+        required: false,
+        enum: [
+          "Electronics",
+          "Fashion & Clothing",
+          "Home & Garden",
+          "Books & Media",
+          "Sports & Outdoors",
+          "Health & Beauty",
+          "Toys & Games",
+          "Food & Beverages",
+          "Automotive",
+          "Other",
+        ],
+      },
+    },
   },
   { minimize: false }
 );

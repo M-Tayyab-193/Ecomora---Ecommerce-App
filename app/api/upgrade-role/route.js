@@ -8,8 +8,8 @@ export async function POST(request) {
   const { userId } = getAuth(request);
   if (!userId) return { status: 401, body: { error: "Unauthorized" } };
 
-  const { role } = await request.json();
-
+  const { role, sellerProfile } = await request.json();
+  const { storeName, phone, category } = sellerProfile || {};
   // only allow "seller" upgrade through this route
   if (role !== "seller") {
     return NextResponse.json({
@@ -18,7 +18,10 @@ export async function POST(request) {
     });
   }
   await connectDB();
-  await User.findByIdAndUpdate(userId, { role });
+  await User.findByIdAndUpdate(userId, {
+    role,
+    sellerProfile: { storeName, phone, category },
+  });
 
   return NextResponse.json({ success: true, role });
 }
