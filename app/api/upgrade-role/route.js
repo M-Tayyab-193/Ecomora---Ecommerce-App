@@ -20,17 +20,20 @@ export async function POST(request) {
     );
   }
   await connectDB();
+
   const updatedUser = await User.findByIdAndUpdate(
     userId,
     {
       $set: {
         role,
-        "sellerProfile.storeName": storeName,
-        "sellerProfile.phone": phone,
-        "sellerProfile.category": category,
+        sellerProfile: {
+          storeName: storeName || "",
+          phone: phone || "",
+          category: category || "Other",
+        },
       },
     },
-    { new: true }
+    { new: true, upsert: false } // don't create new user, just update
   );
   console.log("Updated user", updatedUser);
 
