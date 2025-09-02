@@ -16,7 +16,6 @@ export async function POST(request) {
   const { storeName, phone, category } = sellerProfile || {};
 
   const sellerData = { storeName, phone, category };
-  console.log("Received data:", { role, sellerData });
 
   if (role !== "seller") {
     return NextResponse.json(
@@ -26,7 +25,7 @@ export async function POST(request) {
   }
   await connectDB();
 
-  const user = await User.findById({ userId });
+  const user = await User.findById(userId);
 
   if (!user) {
     return NextResponse.json(
@@ -37,7 +36,6 @@ export async function POST(request) {
   user.role = role;
   user.sellerProfile = sellerData;
   await user.save();
-  console.log("Updated user:", user);
 
   return NextResponse.json({ success: true, user });
 }
