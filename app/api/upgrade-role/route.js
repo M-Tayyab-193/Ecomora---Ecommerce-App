@@ -13,16 +13,25 @@ export async function POST(request) {
   console.log(role, storeName, phone, category);
   // only allow "seller" upgrade through this route
   if (role !== "seller") {
-    return NextResponse.json({
-      status: 400,
-      body: { error: "Invalid role change" },
-    });
+    return NextResponse.json(
+      { success: false, message: "Invalid role change" },
+      { status: 400 }
+    );
   }
   await connectDB();
-  await User.findByIdAndUpdate(userId, {
-    role,
-    sellerProfile: { storeName, phone, category },
-  });
+  const updatedUser = await User.findByIdAndUpdate(
+    userId,
+    {
+      $set: {
+        role,
+        "sellerProfile.storeName": storeName,
+        "sellerProfile.phone": phone,
+        "sellerProfile.category": category,
+      },
+    },
+    { new: true }
+  );
+  console.log("Updated user", updatedUser);
 
   return NextResponse.json({ success: true, role });
 }
