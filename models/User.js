@@ -1,27 +1,5 @@
 import mongoose from "mongoose";
 
-// Define the seller profile schema separately
-const sellerProfileSchema = new mongoose.Schema(
-  {
-    storeName: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-    phone: {
-      type: String,
-      default: "",
-      trim: true,
-    },
-    category: {
-      type: String,
-      default: "Other",
-      trim: true,
-    },
-  },
-  { _id: false }
-); // Don't create _id for subdocument
-
 const userSchema = new mongoose.Schema(
   {
     _id: {
@@ -51,31 +29,13 @@ const userSchema = new mongoose.Schema(
       default: "user",
     },
     sellerProfile: {
-      type: sellerProfileSchema,
-      default: () => ({
-        storeName: "",
-        phone: "",
-        category: "Other",
-      }),
+      storeName: { type: String, default: "" },
+      phone: { type: String, default: "" },
+      category: { type: String, default: "Other" },
     },
   },
-  {
-    minimize: false,
-    // This ensures subdocuments are properly initialized
-    collection: "users",
-  }
+  { minimize: false }
 );
-
-// Add a pre-save hook to ensure sellerProfile is always initialized
-userSchema.pre("save", function () {
-  if (!this.sellerProfile) {
-    this.sellerProfile = {
-      storeName: "",
-      phone: "",
-      category: "Other",
-    };
-  }
-});
 
 const User = mongoose.models.User || mongoose.model("User", userSchema);
 

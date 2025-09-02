@@ -40,6 +40,10 @@ export async function POST(request) {
 
     // Update the fields directly
     user.role = role;
+
+    if (!user.sellerProfile) {
+      user.sellerProfile = {};
+    }
     user.sellerProfile.storeName = storeName;
     user.sellerProfile.phone = phone;
     user.sellerProfile.category = category;
