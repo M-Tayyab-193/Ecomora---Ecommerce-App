@@ -22,29 +22,41 @@ export async function POST(request) {
     );
   }
 
-  console.log(storeName, phone, category);
+  console.log("Input values:", { storeName, phone, category });
   await connectDB();
 
-  // Use dot notation to update nested fields
-  const updateData = {
-    role,
-    "sellerProfile.storeName": storeName,
-    "sellerProfile.phone": phone,
-    "sellerProfile.category": category,
-  };
+  try {
+    // Method 2: Find, modify, and save
+    const user = await User.findById(userId);
 
-  const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
-    new: true,
-    upsert: false,
-  });
+    if (!user) {
+      return NextResponse.json(
+        { success: false, message: "User not found" },
+        { status: 404 }
+      );
+    }
 
-  if (!updatedUser) {
+    console.log("User before update:", user.toObject());
+
+    // Update the fields directly
+    user.role = role;
+    user.sellerProfile.storeName = storeName;
+    user.sellerProfile.phone = phone;
+    user.sellerProfile.category = category;
+
+    console.log("User after field assignment:", user.toObject());
+
+    // Save the changes
+    const savedUser = await user.save();
+
+    console.log("Saved user:", savedUser.toObject());
+
+    return NextResponse.json({ success: true, user: savedUser });
+  } catch (error) {
+    console.error("Update error:", error);
     return NextResponse.json(
-      { success: false, message: "User not found" },
-      { status: 404 }
+      { success: false, message: "Update failed", error: error.message },
+      { status: 500 }
     );
   }
-  console.log("Updated user", updatedUser);
-
-  return NextResponse.json({ success: true, user: updatedUser });
 }
