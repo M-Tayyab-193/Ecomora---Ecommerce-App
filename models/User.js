@@ -42,7 +42,7 @@ const userSchema = new mongoose.Schema(
       category: {
         type: String,
         required: false,
-        default: "",
+        default: "Other",
       },
     },
   },
