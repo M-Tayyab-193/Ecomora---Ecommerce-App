@@ -24,7 +24,7 @@ export async function POST(request) {
 
     const amounts = await Promise.all(
       items.map(async (item) => {
-        const product = await Product.findById(item.productId);
+        const product = await Product.findById(item.product);
         return product.offerPrice * item.quantity;
       })
     );
