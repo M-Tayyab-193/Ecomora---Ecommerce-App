@@ -4,7 +4,7 @@ import { assets, productsDummyData } from "@/assets/assets";
 import Image from "next/image";
 import { useAppContext } from "@/context/AppContext";
 import Footer from "@/components/seller/Footer";
-import Loading from "@/components/Loading";
+import Loader from "@/components/Loader";
 import axios from "axios";
 
 const ProductList = () => {
@@ -40,7 +40,7 @@ const ProductList = () => {
   return (
     <div className="flex-1 min-h-screen flex flex-col justify-between">
       {loading ? (
-        <Loading />
+        <Loader />
       ) : (
         <div className="w-full md:p-10 p-4">
           <h2 className="pb-4 text-lg font-medium">All Product</h2>
@@ -67,7 +67,7 @@ const ProductList = () => {
                       <td className="md:px-4 pl-2 md:pl-4 py-3 flex items-center space-x-3 truncate">
                         <div className="bg-gray-500/10 rounded p-2">
                           <Image
-                            src={product.image[0]}
+                            src={product.images[0]}
                             alt="product Image"
                             className="w-16"
                             width={1280}

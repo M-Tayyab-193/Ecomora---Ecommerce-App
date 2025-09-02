@@ -5,6 +5,7 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
+import { set } from "mongoose";
 
 export const AppContext = createContext();
 
@@ -22,9 +23,22 @@ export const AppContextProvider = ({ children }) => {
   const [userData, setUserData] = useState(false);
   const [isSeller, setIsSeller] = useState(false);
   const [cartItems, setCartItems] = useState({});
+  const [productsLoading, setProductsLoading] = useState(false);
 
   const fetchProductData = async () => {
-    setProducts(productsDummyData);
+    setProductsLoading(true);
+    try {
+      const { data } = await axios.get("/api/product/list");
+      if (data?.success) {
+        setProducts(data.products);
+        setProductsLoading(false);
+      } else {
+        toast.error(data?.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+      console.error("Error fetching product data:", error);
+    }
   };
 
   const fetchUserData = async () => {
@@ -57,6 +71,23 @@ export const AppContextProvider = ({ children }) => {
       cartData[itemId] = 1;
     }
     setCartItems(cartData);
+    if (user) {
+      try {
+        const token = await getToken();
+        await axios.post(
+          "/api/cart/add",
+          { cartData },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        toast.success("Item has been added to cart");
+      } catch (error) {
+        toast.error(error.message);
+      }
+    }
   };
 
   const updateCartQuantity = async (itemId, quantity) => {
@@ -67,6 +98,23 @@ export const AppContextProvider = ({ children }) => {
       cartData[itemId] = quantity;
     }
     setCartItems(cartData);
+    if (user) {
+      try {
+        const token = await getToken();
+        await axios.post(
+          "/api/cart/add",
+          { cartData },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        toast.success("Cart has been updated");
+      } catch (error) {
+        toast.error(error.message);
+      }
+    }
   };
 
   const getCartCount = () => {
@@ -108,6 +156,7 @@ export const AppContextProvider = ({ children }) => {
     userData,
     fetchUserData,
     products,
+    productsLoading,
     fetchProductData,
     cartItems,
     setCartItems,
