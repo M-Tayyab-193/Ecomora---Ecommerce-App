@@ -67,7 +67,7 @@ const Navbar = () => {
             Contact
           </Link>
 
-          {isSeller ? (
+          {user && isSeller ? (
             <button
               onClick={() => router.push("/seller")}
               className="text-xs border px-4 py-1.5 rounded-full hover:border hover:border-orange-500 hover:text-black transition-all ease-in-out"
@@ -124,7 +124,7 @@ const Navbar = () => {
         </ul>
 
         <div className="flex items-center md:hidden gap-3">
-          {isSeller && (
+          {user && isSeller && (
             <button
               onClick={() => router.push("/seller")}
               className="text-xs border px-4 py-1.5 rounded-full"
