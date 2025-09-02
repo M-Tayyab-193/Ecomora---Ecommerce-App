@@ -22,6 +22,7 @@ export async function POST(request) {
     );
   }
 
+  console.log(storeName, phone, category);
   await connectDB();
 
   const updatedUser = await User.findByIdAndUpdate(
@@ -29,9 +30,9 @@ export async function POST(request) {
     {
       role,
       sellerProfile: {
-        storeName: storeName || "",
-        phone: phone || "",
-        category: category || "Other",
+        storeName: storeName,
+        phone: phone,
+        category: category,
       },
     },
     { new: true, upsert: false }
