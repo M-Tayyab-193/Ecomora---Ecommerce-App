@@ -29,18 +29,9 @@ const userSchema = new mongoose.Schema(
       default: "user",
     },
     sellerProfile: {
-      storeName: {
-        type: String,
-        required: false,
-      },
-      phone: {
-        type: String,
-        required: false,
-      },
-      category: {
-        type: String,
-        required: false,
-      },
+      storeName: { type: String, default: "" },
+      phone: { type: String, default: "" },
+      category: { type: String, default: "Other" },
     },
   },
   { minimize: false }

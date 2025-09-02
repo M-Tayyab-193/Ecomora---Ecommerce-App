@@ -18,8 +18,8 @@ export const createUser = inngest.createFunction(
 
     const userData = {
       _id: id,
-      name: first_name + " " + last_name,
-      email: email_addresses[0].email_address,
+      name: `${first_name || ""} ${last_name || ""}`.trim(),
+      email: email_addresses[0]?.email_address,
       imageUrl: image_url,
       role: "user",
     };
