@@ -11,6 +11,7 @@ export async function POST(request) {
   const { role, sellerProfile } = await request.json();
   const { storeName, phone, category } = sellerProfile || {};
   console.log(role, storeName, phone, category);
+
   // only allow "seller" upgrade through this route
   if (role !== "seller") {
     return NextResponse.json(
@@ -25,7 +26,7 @@ export async function POST(request) {
       $set: {
         role,
         "sellerProfile.storeName": storeName,
-        "sellerProfile.phone": phone.toString(),
+        "sellerProfile.phone": phone,
         "sellerProfile.category": category,
       },
     },
