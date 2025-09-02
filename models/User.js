@@ -32,10 +32,12 @@ const userSchema = new mongoose.Schema(
       storeName: {
         type: String,
         required: false,
+        default: "",
       },
       phone: {
         type: String,
         required: false,
+        default: "",
       },
       category: {
         type: String,
@@ -52,6 +54,7 @@ const userSchema = new mongoose.Schema(
           "Automotive",
           "Other",
         ],
+        default: "",
       },
     },
   },
