@@ -25,18 +25,18 @@ export async function POST(request) {
   console.log(storeName, phone, category);
   await connectDB();
 
-  const updatedUser = await User.findByIdAndUpdate(
-    userId,
-    {
-      role,
-      sellerProfile: {
-        storeName: storeName,
-        phone: phone,
-        category: category,
-      },
-    },
-    { new: true, upsert: false }
-  );
+  // Use dot notation to update nested fields
+  const updateData = {
+    role,
+    "sellerProfile.storeName": storeName,
+    "sellerProfile.phone": phone,
+    "sellerProfile.category": category,
+  };
+
+  const updatedUser = await User.findByIdAndUpdate(userId, updateData, {
+    new: true,
+    upsert: false,
+  });
 
   if (!updatedUser) {
     return NextResponse.json(
