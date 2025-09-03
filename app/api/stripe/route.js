@@ -1,94 +1,62 @@
-import { getAuth } from "@clerk/nextjs/server";
-import { NextResponse } from "next/server";
-import Product from "@/models/Product";
-import User from "@/models/User";
 import Stripe from "stripe";
-import Order from "@/models/Order";
 import connectDB from "@/config/db";
+import User from "@/models/User";
+import Order from "@/models/Order";
+import { NextResponse } from "next/server";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
 export async function POST(request) {
   try {
-    const { userId } = getAuth(request);
-    if (!userId) {
-      return NextResponse.json(
-        { success: false, message: "Unauthorized" },
-        { status: 401 }
-      );
-    }
-    const { address, items } = await request.json();
-    const origin = request.headers.get("origin");
+    const body = await request.text();
+    const signature = request.headers.get("stripe-signature");
 
-    if (!address || items.length === 0) {
-      return NextResponse.json(
-        { success: false, message: "Invalid data" },
-        { status: 400 }
-      );
-    }
-    let productData = [];
-    const amounts = await Promise.all(
-      items.map(async (item) => {
-        const product = await Product.findById(item.product);
-        productData.push({
-          name: product.name,
-          quantity: item.quantity,
-          price: product.offerPrice,
-        });
-        return product.offerPrice * item.quantity;
-      })
+    const event = stripe.webhooks.constructEvent(
+      body,
+      signature,
+      process.env.STRIPE_WEBHOOK_SECRET
     );
-    let amount = amounts.reduce((total, value) => total + value, 0);
-    let tax = Math.floor(amount * 0.02);
-    amount += tax;
 
-    await connectDB();
-    const order = await Order.create({
-      userId,
-      address,
-      items,
-      amount: amount + Math.floor(amount * 0.02),
-      date: Date.now(),
-      paymentType: "Stripe",
-    });
+    const handlePaymentIntent = async (paymentIntentId, isPaid) => {
+      const session = await stripe.checkout.sessions.list({
+        payment_intent: paymentIntentId,
+      });
 
-    const user = await User.findById(userId);
-    user.cartItems = {};
-    await user.save();
+      const { orderId, userId } = session.data[0].metadata;
 
-    // Line_items for initializing the stripe payment
-    const line_items = productData.map((item) => ({
-      price_data: {
-        currency: "usd",
-        product_data: {
-          name: item.name,
-        },
-        unit_amount: item.price * 100,
-      },
-      quantity: item.quantity,
-    }));
+      await connectDB();
 
-    // Creating session for stripe payment
-    const session = await stripe.checkout.sessions.create({
-      payment_method_types: ["card"],
-      line_items,
-      mode: "payment",
-      success_url: `${origin}/order-placed`,
-      cancel_url: `${origin}/cart`,
-      metadata: {
-        orderId: order._id.toString(),
-        userId,
-      },
-    });
+      if (isPaid) {
+        await Order.findByIdAndUpdate(orderId, { isPaid: true });
+        await User.findByIdAndUpdate(userId, { cartItems: {} });
+      } else {
+        await Order.findByIdAndUpdate(orderId);
+      }
+    };
+    switch (event.type) {
+      case "payment_intent.succeeded":
+        {
+          await handlePaymentIntent(event.data.object.id, true);
+        }
 
-    const url = session.url;
-
-    return NextResponse.json({ success: true, url });
+        break;
+      case "payment_intent.canceled":
+        {
+          await handlePaymentIntent(event.data.object.id, false);
+        }
+        break;
+      default:
+        console.log(`Unhandled event type: ${event.type}`);
+    }
+    return NextResponse.json({ received: true }, { status: 200 });
   } catch (error) {
-    console.error("Error :", error);
-    return NextResponse.json(
-      { success: false, message: error.message },
-      { status: 500 }
-    );
+    console.error(`Error handling Stripe webhook: ${error.message}`);
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
