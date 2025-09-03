@@ -18,6 +18,7 @@ import my_location_image from "./my_location_image.svg";
 import arrow_icon_white from "./arrow_icon_white.svg";
 import heart_icon from "./heart_icon.svg";
 import star_icon from "./star_icon.svg";
+import stripe from "./stripe.png";
 import redirect_icon from "./redirect_icon.svg";
 import star_dull_icon from "./star_dull_icon.svg";
 import header_headphone_image from "./header_headphone_image.png";
@@ -49,6 +50,7 @@ import product_details_page_apple_earphone_image5 from "./product_details_page_a
 
 export const assets = {
   logo,
+  stripe,
   search_icon,
   user_icon,
   cart_icon,

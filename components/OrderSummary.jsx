@@ -3,6 +3,8 @@ import { useAppContext } from "@/context/AppContext";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
+import { assets } from "@/assets/assets";
+import Image from "next/image";
 
 const OrderSummary = () => {
   const {
@@ -17,6 +19,7 @@ const OrderSummary = () => {
   } = useAppContext();
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isPlaceOrderClicked, setIsPlaceOrderClicked] = useState(false);
 
   const [userAddresses, setUserAddresses] = useState([]);
 
@@ -45,47 +48,47 @@ const OrderSummary = () => {
     setIsDropdownOpen(false);
   };
 
-  // const createOrder = async () => {
-  //   try {
-  //     if (!selectedAddress) {
-  //       return toast.error("Please select a delivery address");
-  //     }
-  //     let cartItemsArray = Object.keys(cartItems).map((key) => ({
-  //       product: key,
-  //       quantity: cartItems[key],
-  //     }));
+  const createOrder = async () => {
+    try {
+      if (!selectedAddress) {
+        return toast.error("Please select a delivery address");
+      }
+      let cartItemsArray = Object.keys(cartItems).map((key) => ({
+        product: key,
+        quantity: cartItems[key],
+      }));
 
-  //     cartItemsArray = cartItemsArray.filter((item) => item.quantity > 0);
+      cartItemsArray = cartItemsArray.filter((item) => item.quantity > 0);
 
-  //     if (cartItemsArray.length === 0) {
-  //       return toast.error("Your cart is empty");
-  //     }
+      if (cartItemsArray.length === 0) {
+        return toast.error("Your cart is empty");
+      }
 
-  //     const token = await getToken();
-  //     const { data } = await axios.post(
-  //       "/api/order/create",
-  //       {
-  //         address: selectedAddress._id,
-  //         items: cartItemsArray,
-  //       },
-  //       {
-  //         headers: {
-  //           Authorization: `Bearer ${token}`,
-  //         },
-  //       }
-  //     );
+      const token = await getToken();
+      const { data } = await axios.post(
+        "/api/order/create",
+        {
+          address: selectedAddress._id,
+          items: cartItemsArray,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-  //     if (data.success) {
-  //       toast.success(data.message);
-  //       setCartItems({});
-  //       router.push("/order-placed");
-  //     } else {
-  //       toast.error(data.message);
-  //     }
-  //   } catch (error) {
-  //     toast.error(error.message);
-  //   }
-  // };
+      if (data.success) {
+        toast.success(data.message);
+        setCartItems({});
+        router.push("/order-placed");
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
 
   const createOrderStripe = async () => {
     try {
@@ -240,12 +243,35 @@ const OrderSummary = () => {
         </div>
       </div>
 
-      <button
-        onClick={createOrderStripe}
-        className="w-full bg-orange-600 text-white py-3 mt-5 hover:bg-orange-700"
-      >
-        Place Order
-      </button>
+      {!isPlaceOrderClicked ? (
+        <button
+          onClick={() => setIsPlaceOrderClicked(true)}
+          className="w-full bg-orange-600 text-white py-3 mt-5 hover:bg-orange-700"
+        >
+          Place Order
+        </button>
+      ) : (
+        <div className="flex gap-2 items-center">
+          <button
+            onClick={createOrder}
+            className="w-full bg-orange-600 text-white py-2 mt-5 hover:bg-orange-700"
+          >
+            Cash On Delivery
+          </button>
+          <button
+            onClick={createOrderStripe}
+            className="w-full py-2 mt-5 flex items-center justify-center border border-indigo-500 bg-white hover:bg-gray-100"
+          >
+            <Image
+              src={assets.stripe || "http://placeholder.co/150x50?text=Stripe"}
+              alt="Stripe"
+              width={70}
+              height={22}
+              className="object-cover w-[70px] h-[22px]"
+            />
+          </button>
+        </div>
+      )}
     </div>
   );
 };
