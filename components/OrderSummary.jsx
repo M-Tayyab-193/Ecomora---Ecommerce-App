@@ -29,11 +29,13 @@ const OrderSummary = () => {
         },
       });
       if (data.success) setUserAddresses(data.addresses);
-      if (data.addresses.length > 0) setSelectedAddress(data.addresses[0]);
+      if (data.addresses && data.addresses.length > 0)
+        setSelectedAddress(data.addresses[0]);
       else {
-        toast.error(data.message);
+        toast.error("No addresses found. Please add an address.");
       }
     } catch (error) {
+      console.error("Error fetching addresses:", error);
       toast.error(error.message);
     }
   };

@@ -23,6 +23,15 @@ const orderSchema = new mongoose.Schema({
     type: Date,
     required: true,
   },
+  paymentType: {
+    type: String,
+    required: true,
+  },
+  isPaid: {
+    type: Boolean,
+    required: true,
+    default: false,
+  },
 });
 
 const Order = mongoose.models.Order || mongoose.model("Order", orderSchema);
