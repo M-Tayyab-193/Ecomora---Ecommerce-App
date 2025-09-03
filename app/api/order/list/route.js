@@ -15,9 +15,10 @@ export async function GET(request) {
     }
 
     await connectDB();
-    const orders = await Order.find({ userId }).populate(
-      "address items.product"
-    );
+    const orders = await Order.find({
+      userId,
+      $or: [{ paymentType: "COD" }, { paymentType: "Stripe", isPaid: true }],
+    }).populate("address items.product");
 
     return NextResponse.json({ success: true, orders }, { status: 200 });
   } catch (error) {
